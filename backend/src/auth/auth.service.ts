@@ -12,8 +12,8 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
-  async validateUser(username: string, pass: string): Promise<any> {
-    const user = await this.userService.findByUsername(username);
+  async validateUser(email: string, pass: string): Promise<any> {
+    const user = await this.userService.findByEmail(email);
     if (user && (await bcrypt.compare(pass, user.password))) {
       // Return user without the password field
       return {
@@ -27,7 +27,7 @@ export class AuthService {
   }
 
   async login(user: any) {
-    const payload = { username: user.username, sub: user.id };
+    const payload = { email: user.email, sub: user.id };
     const refreshToken = this.jwtService.sign(payload, {
       secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
       expiresIn: this.configService.get<string | number>(
@@ -49,7 +49,7 @@ export class AuthService {
       const payload = this.jwtService.verify(refreshToken, {
         secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
       });
-      const newPayload = { username: payload.username, sub: payload.sub };
+      const newPayload = { email: payload.email, sub: payload.sub };
       return {
         access_token: this.jwtService.sign(newPayload, {
           expiresIn: this.configService.get<string | number>(
