@@ -1,34 +1,28 @@
-import { Controller, Post, Body, UseGuards, Req } from '@nestjs/common';
+import { Controller, Request, Post, Body, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
-import { UsersService } from 'src/modules/users/users.service';
 import { CreateUserDto } from 'src/modules/users/dto/create-user.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly userService: UsersService,
-  ) {}
-
-  @Post('register')
-  async register(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(
-      createUserDto.username,
-      createUserDto.email,
-      createUserDto.password,
-      createUserDto.role,
-    );
-  }
+  constructor(private authService: AuthService) {}
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Req() req) {
+  async login(@Request() req) {
     return this.authService.login(req.user);
   }
 
-  @Post('refresh-token')
-  async refreshToken(@Body('refresh_token') refreshToken: string) {
-    return this.authService.refreshAccessToken(refreshToken);
+  @Post('register')
+  async register(@Body() createUserDto: CreateUserDto) {
+    const user = await this.authService.register(createUserDto);
+    return {
+      message: 'Registration successful. Please check your email.',
+      user: {
+        username: user.username,
+        email: user.email,
+        role: user.role,
+      },
+    };
   }
 }
