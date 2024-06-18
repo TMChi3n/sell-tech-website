@@ -99,3 +99,6 @@ And this is **Global folder**. Contain **globalClass** and **globalEnum**
 `globalEnum` 
 
 ![alt text](image-4.png)
+
+`forgot and reset **password**`
+![alt text](image-6.png)

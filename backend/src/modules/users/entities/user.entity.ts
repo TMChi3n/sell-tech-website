@@ -12,4 +12,18 @@ export class User {
   email: string;
   @Column({ default: 'USER' })
   role: string;
+  @Column({ nullable: true })
+  resetPasswordToken: string;
+
+  @Column({ nullable: true })
+  resetPasswordExpires: Date;
+
+  @Column({ nullable: true })
+  address: string;
+
+  @Column({ nullable: true, default: 'empty' })
+  gender: string;
+
+  @Column({ nullable: true, type: 'date' })
+  birthday: Date;
 }
