@@ -6,6 +6,7 @@ import {
 } from "@ant-design/icons";
 import { Menu } from "antd";
 import ManagementProduct from "../components/product/productPage";
+import UserList from "../components/user/userPage";
 
 function AdminPage() {
   function getItem(label, key, icon, children, type) {
@@ -37,7 +38,8 @@ function AdminPage() {
     switch (type) {
       case "product":
         return <ManagementProduct />;
-
+      case "user":
+        return <UserList />;
       default:
         return <></>;
     }

@@ -8,8 +8,8 @@ import {
   Upload,
   Input,
 } from "antd";
-import InputComponent from "../../input/inputCpn.jsx";
 import { UploadOutlined } from "@ant-design/icons";
+import { updateProduct } from "../../../apis/apisRequest";
 
 const { Option } = Select;
 
@@ -17,8 +17,8 @@ const UpdateProductDrawer = ({
   form,
   isDrawerOpen,
   onClose,
-  updateProduct,
   product,
+  updateProduct,
 }) => {
   useEffect(() => {
     if (product) {
@@ -29,7 +29,7 @@ const UpdateProductDrawer = ({
         material: product.material,
         overview: product.overview,
         type: product.type,
-        img_url: product.img_url ? [{ uid: "-1", url: product.img_url }] : [], // Adjusted for single image display
+        img_url: product.img_url, // Assuming img_url is a string URL initially
         person: product.person,
       });
     }
@@ -43,7 +43,7 @@ const UpdateProductDrawer = ({
     }
   };
 
-  const onFinish = (values) => {
+  const onFinish = async (values) => {
     const productId = parseInt(values.id_product, 10);
     if (isNaN(productId)) {
       notification.error({
@@ -65,8 +65,20 @@ const UpdateProductDrawer = ({
         values.img_url && values.img_url[0] && values.img_url[0].originFileObj,
     };
 
-    console.log(productId, productData);
-    updateProduct(productId, productData);
+    try {
+      await updateProduct(productId, productData);
+      notification.success({
+        message: "Product updated successfully!",
+      });
+      onClose(); // Close the drawer after updating
+    } catch (error) {
+      console.error("Axios error:", error);
+      console.log("Error response:", error.response); // Log the error response for detailed information
+      notification.error({
+        message: "Update failed",
+        description: error.response?.data?.message || "Unknown error occurred",
+      });
+    }
   };
 
   return (
@@ -77,57 +89,27 @@ const UpdateProductDrawer = ({
       width={480}
     >
       <Form form={form} layout="vertical" onFinish={onFinish}>
-        <Form.Item
-          label="ID Product"
-          name="id_product"
-          rules={[{ required: true, message: "Please enter the product ID" }]}
-        >
-          <InputComponent disabled />
+        <Form.Item label="ID Product" name="id_product">
+          <Input disabled />
         </Form.Item>
 
-        <Form.Item
-          label="Product Name"
-          name="name"
-          rules={[{ required: true, message: "Please enter the product name" }]}
-        >
-          <InputComponent allowClear placeholder="Enter product name" />
+        <Form.Item label="Product Name" name="name">
+          <Input allowClear placeholder="Enter product name" />
         </Form.Item>
 
-        <Form.Item
-          label="Price"
-          name="price"
-          rules={[
-            { required: true, message: "Please enter the product price" },
-          ]}
-        >
-          <InputComponent allowClear placeholder="Enter product price" />
+        <Form.Item label="Price" name="price">
+          <Input allowClear placeholder="Enter product price" />
         </Form.Item>
 
-        <Form.Item
-          label="Material"
-          name="material"
-          rules={[
-            { required: true, message: "Please enter the product material" },
-          ]}
-        >
-          <InputComponent allowClear placeholder="Enter product material" />
+        <Form.Item label="Material" name="material">
+          <Input allowClear placeholder="Enter product material" />
         </Form.Item>
 
-        <Form.Item
-          label="Overview"
-          name="overview"
-          rules={[
-            { required: true, message: "Please enter the product overview" },
-          ]}
-        >
-          <InputComponent allowClear placeholder="Enter product overview" />
+        <Form.Item label="Overview" name="overview">
+          <Input.TextArea allowClear placeholder="Enter product overview" />
         </Form.Item>
 
-        <Form.Item
-          label="Type"
-          name="type"
-          rules={[{ required: true, message: "Please choose a type" }]}
-        >
+        <Form.Item label="Type" name="type">
           <Select placeholder="Choose type" allowClear>
             <Option value="trouser">Trouser</Option>
             <Option value="jacket">Jacket</Option>
@@ -137,11 +119,7 @@ const UpdateProductDrawer = ({
           </Select>
         </Form.Item>
 
-        <Form.Item
-          label="Image"
-          name="img_url"
-          rules={[{ required: true, message: "Please provide an image" }]}
-        >
+        <Form.Item label="Image" name="img_url">
           <Upload
             name="img"
             listType="picture"
@@ -152,11 +130,7 @@ const UpdateProductDrawer = ({
           </Upload>
         </Form.Item>
 
-        <Form.Item
-          label="Person"
-          name="person"
-          rules={[{ required: true, message: "Please choose a person" }]}
-        >
+        <Form.Item label="Person" name="person">
           <Select placeholder="Choose person" allowClear>
             <Option value="male">Male</Option>
             <Option value="female">Female</Option>

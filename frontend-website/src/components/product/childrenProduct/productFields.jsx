@@ -82,3 +82,4 @@ const Tables = ({ products, handleEdit, handleDelete }) => {
 };
 
 export default Tables;
+

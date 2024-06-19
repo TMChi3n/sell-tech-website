@@ -45,10 +45,16 @@ const ManagementProduct = () => {
       success("Update product successfully!");
       setIsDrawerOpen(false);
       console.log(res);
-    } catch (e) {
-      console.log("Verify your data!", e);
+    } catch (error) {
+      console.error("Error updating product:", error);
+      console.log("Error response:", error.response);
+      notification.error({
+        message: "Update failed",
+        description: error.response?.data?.message || "Unknown error occurred",
+      });
     }
   };
+  
 
   const deleteProd = useMutation(deleteProduct, {
     onSuccess: () => {
