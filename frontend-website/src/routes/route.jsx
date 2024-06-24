@@ -1,5 +1,6 @@
 import HomePage from "../page/homePage.jsx";
 import ManagementProduct from "../components/product/productPage.jsx";
+import ChangePassword from "../components/user/childrenUser/change-password.jsx";
 
 const routePrivate = [
   {
@@ -12,4 +13,11 @@ const routePrivate = [
   },
 ];
 
-export { routePrivate };
+const routePublic = [
+  {
+    path: "/reset-password",
+    component: ChangePassword,
+  },
+];
+
+export { routePrivate, routePublic };

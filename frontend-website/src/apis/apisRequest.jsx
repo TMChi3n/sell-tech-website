@@ -70,3 +70,12 @@ export const getAllUsers = async () => {
   }
 };
 
+export const resetPassword = async (token, resetPasswordData) => {
+  try {
+    const res = await url.post(`/auth/reset-password?token=${token}`, resetPasswordData);
+    return res.data;
+  } catch (err) {
+    console.error("Error resetting password:", err);
+    throw err;
+  }
+};
