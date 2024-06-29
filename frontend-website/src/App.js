@@ -1,26 +1,43 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { routePrivate, routePublic } from "./routes/route";
-
-const queryClient = new QueryClient();
+import AuthRoute from "./routes/authRoute";
+import { setUser } from "./redux/userSlice";
+import AdminPage from "./page/homePage"; // Ensure this import is correct
 
 function App() {
+  const dispatch = useDispatch();
+
+  React.useEffect(() => {
+    const storedUserInfo = JSON.parse(localStorage.getItem("user_info"));
+    if (storedUserInfo) {
+      dispatch(setUser(storedUserInfo));
+    }
+  }, [dispatch]);
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <Router>
-        <Routes>
-          {routePrivate.map((route, index) => {
-            const Page = route.component;
-            return <Route key={index} path={route.path} element={<Page />} />;
-          })}
-          {routePublic.map((route, index) => {
-            const Page = route.component;
-            return <Route key={index} path={route.path} element={<Page />} />;
-          })}
-        </Routes>
-      </Router>
-    </QueryClientProvider>
+    <Routes>
+      {routePrivate.map((route, index) => {
+        const Page = route.component;
+        return (
+          <Route
+            key={index}
+            path={route.path}
+            element={
+              <AuthRoute>
+                <Page />
+              </AuthRoute>
+            }
+          />
+        );
+      })}
+      {routePublic.map((route, index) => {
+        const Page = route.component;
+        return <Route key={index} path={route.path} element={<Page />} />;
+      })}
+      <Route path="*" element={<Navigate to="/login" />} />
+    </Routes>
   );
 }
 

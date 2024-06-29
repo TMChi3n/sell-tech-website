@@ -11,6 +11,38 @@ export const getAllProducts = async () => {
   }
 };
 
+export const getAllOrders = async (token) => {
+  try {
+    const res = await url.get("/order", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res.data;
+  } catch (err) {
+    console.error("Error fetching orders", err);
+    throw err;
+  }
+};
+
+export const updateOrderStatus = async (id_order, status, token) => {
+  try {
+    await url.patch(
+      `/order/${id_order}/status`,
+      { status },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    console.log(`id order: ${id_order}`);
+  } catch (err) {
+    console.error("Error updating order status", err);
+    throw err;
+  }
+};
+
 export const createProduct = async (product) => {
   try {
     const res = await url.post("/product/create", product);
@@ -70,12 +102,40 @@ export const getAllUsers = async () => {
   }
 };
 
+export const getUserById = async (id, token) => {
+  try {
+    const res = await url.get(`/user/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res.data;
+  } catch (err) {
+    console.error("Error fetching user:", err);
+    throw err;
+  }
+};
+
 export const resetPassword = async (token, resetPasswordData) => {
   try {
-    const res = await url.post(`/auth/reset-password?token=${token}`, resetPasswordData);
+    const res = await url.post(
+      `/auth/reset-password?token=${token}`,
+      resetPasswordData
+    );
     return res.data;
   } catch (err) {
     console.error("Error resetting password:", err);
     throw err;
+  }
+};
+
+export const loginAccount = async (data) => {
+  try {
+    const res = await url.post("/auth/login", data);
+    console.log("API response data:", res.data);
+    return res.data;
+  } catch (error) {
+    console.error("API error:", error);
+    throw error;
   }
 };
