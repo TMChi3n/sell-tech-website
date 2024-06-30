@@ -47,7 +47,9 @@ const AddingProduct = ({ form, isModalOpen, createMutation, onCancel }) => {
         <Form.Item
           label="Price"
           name="price"
-          rules={[{ required: true, message: "Please enter the product price" }]}
+          rules={[
+            { required: true, message: "Please enter the product price" },
+          ]}
         >
           <InputComponent allowClear placeholder="Enter product price" />
         </Form.Item>
@@ -90,9 +92,7 @@ const AddingProduct = ({ form, isModalOpen, createMutation, onCancel }) => {
           label="Image"
           name="img_url"
           valuePropName="fileList"
-          getValueFromEvent={(e) =>
-            Array.isArray(e) ? e : e && e.fileList
-          }
+          getValueFromEvent={(e) => (Array.isArray(e) ? e : e && e.fileList)}
           rules={[{ required: true, message: "Please provide an image" }]}
         >
           <Upload name="img" listType="picture" beforeUpload={() => false}>

@@ -15,15 +15,6 @@ import OrdersList from "../components/order/ordersList.jsx";
 function AdminPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  // const userInfo = useSelector((state) => state.user);
-
-  // useEffect(() => {
-  //   const storedUserInfo = JSON.parse(localStorage.getItem("user_info"));
-  //   if (storedUserInfo) {
-  //     dispatch(setUser(storedUserInfo));
-  //   }
-  // }, [dispatch]);
-
   const items = [
     {
       key: "sub1",

@@ -31,7 +31,7 @@ const ManagementProduct = () => {
   const create = useMutation(createProduct, {
     onSuccess: () => {
       queryClient.invalidateQueries("product");
-      setIsDrawerOpen(false);
+      setIsModalOpen(false);
       success("Product created successfully!");
     },
     onError: () => {
@@ -39,22 +39,20 @@ const ManagementProduct = () => {
     },
   });
 
-  const update = async (id, data) => {
-    try {
-      const res = await updateProduct(id, data);
-      success("Update product successfully!");
+  const update = useMutation(updateProduct, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("product");
       setIsDrawerOpen(false);
-      console.log(res);
-    } catch (error) {
-      console.error("Error updating product:", error);
-      console.log("Error response:", error.response);
+      success("Product updated successfully!");
+    },
+    onError: (error) => {
+      console.error("Failed to update product", error);
       notification.error({
-        message: "Update failed",
-        description: error.response?.data?.message || "Unknown error occurred",
+        message: "Failed to update product",
+        description: error.response?.data?.message || "Please check your data.",
       });
-    }
-  };
-  
+    },
+  });
 
   const deleteProd = useMutation(deleteProduct, {
     onSuccess: () => {
@@ -62,8 +60,8 @@ const ManagementProduct = () => {
       setIsModalDeleteOpen(false);
       success("Product deleted successfully!");
     },
-    onError: () => {
-      console.log("Error deleting product", error);
+    onError: (error) => {
+      console.error("Error deleting product", error);
       notification.error({
         message: "Failed",
         description: error.response?.data?.message || "Verify your data",
@@ -79,15 +77,14 @@ const ManagementProduct = () => {
   };
 
   const handleEditProduct = (product) => {
-    form.setFieldsValue(product);
     setSelectedProduct(product);
+    form.setFieldsValue(product);
     setIsDrawerOpen(true);
   };
 
   const handleDeleteProduct = async (productId) => {
     try {
       await deleteProd.mutateAsync(productId);
-      queryClient.invalidateQueries("product");
       notification.success({
         message: "Delete product successfully!",
         description: "Success",
@@ -108,7 +105,7 @@ const ManagementProduct = () => {
     }
     try {
       await deleteProd.mutateAsync(selectedProduct.id_product);
-      setIsModalDeleteOpen(false); // Close the confirmation modal after successful deletion
+      setIsModalDeleteOpen(false);
       notification.success({
         message: "Product deleted successfully!",
         description: "The selected product has been deleted.",
@@ -155,7 +152,7 @@ const ManagementProduct = () => {
       <UpdateProductDrawer
         form={form}
         isDrawerOpen={isDrawerOpen}
-        updateProduct={update}
+        updateProduct={(id, data) => update.mutate({ id, data })}
         onClose={() => setIsDrawerOpen(false)}
       />
 

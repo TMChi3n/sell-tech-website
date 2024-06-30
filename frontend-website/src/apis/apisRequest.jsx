@@ -53,31 +53,12 @@ export const createProduct = async (product) => {
   }
 };
 
-export const updateProduct = async (id, product) => {
+export const updateProduct = async (id, productData) => {
   try {
-    const formData = new FormData();
-    formData.append("id_product", product.id_product);
-    formData.append("name", product.name);
-    formData.append("price", product.price);
-    formData.append("material", product.material);
-    formData.append("overview", product.overview);
-    formData.append("type", product.type);
-    formData.append("person", product.person);
-
-    // Ensure img_url is appended correctly if it's a File object
-    if (product.img_url instanceof File) {
-      formData.append("img_url", product.img_url);
-    }
-
-    const res = await url.put(`/product/update/${id}`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-
-    return res.data;
+    const response = await url.put(`/product/update/${id}`, productData);
+    return response.data;
   } catch (err) {
-    console.error("Verify your data, please!", err);
+    console.error("Error updating product:", err);
     throw err;
   }
 };
