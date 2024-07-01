@@ -130,3 +130,21 @@ export const loginAccount = async (data) => {
     throw error;
   }
 };
+
+export const setPermissionRole = async (id_user, role, token) => {
+  try {
+    await url.patch(
+      `/auth/update-role/${id_user}`,
+      { role },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    console.log(`id user: ${id_user}`);
+  } catch (err) {
+    console.error("Error updating order status", err);
+    throw err;
+  }
+}
