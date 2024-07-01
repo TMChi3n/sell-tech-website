@@ -5,11 +5,11 @@ import { PlusOutlined } from "@ant-design/icons";
 import {
   getAllProducts,
   createProduct,
-  updateProduct,
+  updateProduct as updateProductAPI,
   deleteProduct,
 } from "../../apis/apisRequest";
 import AddingProduct from "../product/childrenProduct/add";
-import UpdateProductDrawer from "../product/childrenProduct/update";
+import UpdateProduct from "../product/childrenProduct/update";
 import DeleteProduct from "../product/childrenProduct/delete";
 import Tables from "../product/childrenProduct/productFields";
 import { success, error } from "../../components/messages/message";
@@ -39,20 +39,18 @@ const ManagementProduct = () => {
     },
   });
 
-  const update = useMutation(updateProduct, {
-    onSuccess: () => {
-      queryClient.invalidateQueries("product");
-      setIsDrawerOpen(false);
+  const update = async (productId, data) => {
+    try {
+      console.log("Update payload:", data); // Log data being sent
+      await updateProductAPI(productId, data);
       success("Product updated successfully!");
-    },
-    onError: (error) => {
-      console.error("Failed to update product", error);
-      notification.error({
-        message: "Failed to update product",
-        description: error.response?.data?.message || "Please check your data.",
-      });
-    },
-  });
+      setIsDrawerOpen(false);
+      queryClient.invalidateQueries("product");
+    } catch (err) {
+      console.error("Error details:", err); // Log the error details
+      error("Failed to update product");
+    }
+  };
 
   const deleteProd = useMutation(deleteProduct, {
     onSuccess: () => {
@@ -60,12 +58,9 @@ const ManagementProduct = () => {
       setIsModalDeleteOpen(false);
       success("Product deleted successfully!");
     },
-    onError: (error) => {
-      console.error("Error deleting product", error);
-      notification.error({
-        message: "Failed",
-        description: error.response?.data?.message || "Verify your data",
-      });
+    onError: (err) => {
+      console.error("Error deleting product", err);
+      error("Failed to delete product");
     },
   });
 
@@ -77,24 +72,17 @@ const ManagementProduct = () => {
   };
 
   const handleEditProduct = (product) => {
-    setSelectedProduct(product);
     form.setFieldsValue(product);
+    setSelectedProduct(product);
     setIsDrawerOpen(true);
   };
 
   const handleDeleteProduct = async (productId) => {
     try {
       await deleteProd.mutateAsync(productId);
-      notification.success({
-        message: "Delete product successfully!",
-        description: "Success",
-      });
-    } catch (error) {
-      console.error("Failed");
-      notification.error({
-        message: "Failed",
-        description: error.response?.data?.message || "Verify your data",
-      });
+    } catch (err) {
+      console.error("Failed to delete product", err);
+      error("Failed to delete product");
     }
   };
 
@@ -106,17 +94,10 @@ const ManagementProduct = () => {
     try {
       await deleteProd.mutateAsync(selectedProduct.id_product);
       setIsModalDeleteOpen(false);
-      notification.success({
-        message: "Product deleted successfully!",
-        description: "The selected product has been deleted.",
-      });
-    } catch (error) {
-      console.error("Failed to delete product", error);
-      notification.error({
-        message: "Failed to delete product",
-        description:
-          error.response?.data?.message || "Please verify your data.",
-      });
+      success("Product deleted successfully!");
+    } catch (err) {
+      console.error("Failed to delete product", err);
+      error("Failed to delete product");
     }
   };
 
@@ -149,11 +130,12 @@ const ManagementProduct = () => {
         onCancel={() => setIsModalOpen(false)}
       />
 
-      <UpdateProductDrawer
+      <UpdateProduct
         form={form}
         isDrawerOpen={isDrawerOpen}
-        updateProduct={(id, data) => update.mutate({ id, data })}
+        updateProduct={update}
         onClose={() => setIsDrawerOpen(false)}
+        selectedProduct={selectedProduct}
       />
 
       <DeleteProduct

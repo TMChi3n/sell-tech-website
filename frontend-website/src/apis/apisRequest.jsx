@@ -11,6 +11,16 @@ export const getAllProducts = async () => {
   }
 };
 
+export const getProductById = async (id) => {
+  try {
+    const res = await url.get(`/product/get/${id}`);
+    return res.data;
+  } catch (err) {
+    console.error("Error fetching products", err);
+    throw err;
+  }
+};
+
 export const getAllOrders = async (token) => {
   try {
     const res = await url.get("/order", {

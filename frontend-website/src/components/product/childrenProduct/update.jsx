@@ -1,35 +1,20 @@
-import React, { useState } from "react";
-import {
-  Drawer,
-  Form,
-  Button,
-  notification,
-  Select,
-  Upload,
-  Input,
-} from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import React, { useEffect } from "react";
+import { Drawer, Form, Button, notification, Select, Input } from "antd";
 
 const { Option } = Select;
 
-const UpdateProduct = ({ form, isDrawerOpen, onClose, updateProduct }) => {
-  const [fileList, setFileList] = useState([]);
-  const [existingImage, setExistingImage] = useState(null);
-
-  const handleUploadChange = (info) => {
-    setFileList(info.fileList);
-    form.setFieldsValue({
-      img_url: info.fileList,
-    });
-  };
-
-  const handleRemoveImage = () => {
-    setExistingImage(null);
-    setFileList([]);
-    form.setFieldsValue({
-      img_url: null,
-    });
-  };
+const UpdateProduct = ({
+  form,
+  isDrawerOpen,
+  onClose,
+  updateProduct,
+  selectedProduct,
+}) => {
+  useEffect(() => {
+    if (selectedProduct) {
+      form.setFieldsValue(selectedProduct);
+    }
+  }, [selectedProduct, form]);
 
   return (
     <Drawer
@@ -55,14 +40,9 @@ const UpdateProduct = ({ form, isDrawerOpen, onClose, updateProduct }) => {
             name: values.name,
             material: values.material,
             overview: values.overview,
-            price: parseFloat(values.price),
+            price: parseInt(values.price, 10),
             type: values.type,
             person: values.person,
-            img_url:
-              existingImage ||
-              (values.img_url &&
-                values.img_url[0] &&
-                values.img_url[0].originFileObj),
           };
           updateProduct(productId, productData);
         }}
@@ -95,29 +75,6 @@ const UpdateProduct = ({ form, isDrawerOpen, onClose, updateProduct }) => {
             <Option value="T-Shirt">T-Shirt</Option>
             <Option value="dress">Dress</Option>
           </Select>
-        </Form.Item>
-
-        <Form.Item label="Image" name="img_url">
-          <Upload
-            name="img"
-            listType="picture"
-            fileList={fileList}
-            beforeUpload={() => false}
-            onChange={handleUploadChange}
-            onRemove={handleRemoveImage}
-          >
-            <Button icon={<UploadOutlined />}>Click to upload</Button>
-          </Upload>
-          {existingImage && (
-            <div>
-              <img
-                src={existingImage}
-                alt="Existing"
-                style={{ width: "100px", marginTop: "10px" }}
-              />
-              <Button onClick={handleRemoveImage}>Remove Image</Button>
-            </div>
-          )}
         </Form.Item>
 
         <Form.Item label="Person" name="person">
